@@ -1,0 +1,23 @@
+<.header>
+  Listing Images
+  <:actions>
+    <.link href={~p"/images/new"}>
+      <.button>New Image</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table id="images" rows={@images} row_click={&JS.navigate(~p"/images/#{&1}")}>
+  <:col :let={image} label="Filename"><%= image.filename %></:col>
+  <:action :let={image}>
+    <div class="sr-only">
+      <.link navigate={~p"/images/#{image}"}>Show</.link>
+    </div>
+    <.link navigate={~p"/images/#{image}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={image}>
+    <.link href={~p"/images/#{image}"} method="delete" data-confirm="Are you sure?">
+      Delete
+    </.link>
+  </:action>
+</.table>

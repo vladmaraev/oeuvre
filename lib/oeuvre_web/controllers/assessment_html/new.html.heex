@@ -1,0 +1,9 @@
+<.simple_form :let={f} for={@changeset} action={~p"/trials"}>
+  <.error :if={@changeset.action}>
+    Oops, something went wrong! Please check the errors below.
+  </.error>
+  <.input field={f[:trial]} type="text" label="Enter your code" />
+  <:actions>
+    <.button>Start!</.button>
+  </:actions>
+</.simple_form>
