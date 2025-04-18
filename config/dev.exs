@@ -1,14 +1,11 @@
 import Config
 # Configure your database
 config :oeuvre, Oeuvre.Repo,
-  url:
-    "postgresql://postgres.ttlfngopsrcdgjlvuitl:S4quCek92lCovnrc@aws-0-eu-north-1.pooler.supabase.com:6543/postgres"
-
-# System.get_env("DATABASE_URL") ||
-#   raise("""
-#   environment variable DATABASE_URL is missing.
-#   For example: ecto://USER:PASS@HOST/DATABASE
-#   """)
+  url: System.get_env("DATABASE_URL") ||
+  raise("""
+  environment variable DATABASE_URL is missing.
+  For example: ecto://USER:PASS@HOST/DATABASE
+  """)
 
 # For development, we disable any cache and enable
 # debugging and code reloading.
@@ -56,9 +53,9 @@ config :oeuvre, OeuvreWeb.Endpoint,
 config :oeuvre, OeuvreWeb.Endpoint,
   live_reload: [
     patterns: [
-      ~r"priv/static/(?!uploads/).*(js|css|png|jpeg|jpg|gif|svg)$",
-      ~r"priv/gettext/.*(po)$",
-      ~r"lib/oeuvre_web/(controllers|live|components)/.*(ex|heex)$"
+      ~r"priv/static/[^.](?!uploads/).*(js|css|png|jpeg|jpg|gif|svg)$",
+      ~r"priv/gettext/[^.].*(po)$",
+      ~r"lib/oeuvre_web/(controllers|live|components)/[^.].*(ex|heex)$"
     ]
   ]
 

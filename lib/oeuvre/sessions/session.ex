@@ -8,7 +8,7 @@ defmodule Oeuvre.Sessions.Session do
     field :prolific_study_id, :string
     field :group_id, :integer
     field :step, :integer
-    
+
     timestamps(type: :utc_datetime)
   end
 
@@ -16,6 +16,12 @@ defmodule Oeuvre.Sessions.Session do
   def changeset(session, attrs) do
     session
     |> cast(attrs, [:prolific_pid, :prolific_session_id, :prolific_study_id, :group_id, :step])
-    |> validate_required([:prolific_pid, :prolific_session_id, :prolific_study_id, :group_id, :step])
+    |> validate_required([
+      :prolific_pid,
+      :prolific_session_id,
+      :prolific_study_id,
+      :group_id,
+      :step
+    ])
   end
 end

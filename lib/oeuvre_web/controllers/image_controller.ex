@@ -16,7 +16,7 @@ defmodule OeuvreWeb.ImageController do
 
   def create(conn, %{"image" => image_params}) do
     case Stimuli.create_image(image_params) do
-      {:ok, image} ->
+      {:ok, _} ->
         conn
         |> put_flash(:info, "Image created successfully.")
         |> redirect(to: ~p"/images/")

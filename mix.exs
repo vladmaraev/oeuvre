@@ -1,6 +1,6 @@
 defmodule Oeuvre.MixProject do
   use Mix.Project
-  
+
   def project do
     [
       app: :oeuvre,
@@ -61,7 +61,13 @@ defmodule Oeuvre.MixProject do
       {:bandit, "~> 1.5"},
       {:sshex, "2.2.1"},
       {:req, "~> 0.5.7"},
-      {:vix, "~> 0.5"}
+      {:vix, "~> 0.5"},
+      {:boombox,
+       github: "membraneframework/boombox", ref: "f4ccbfcf4a71d14764fd269b3491d4c862c4d4c2"},
+      {:membrane_webrtc_plugin,
+       github: "membraneframework/membrane_webrtc_plugin",
+       ref: "2bdf80ed73ea7fe9531e76449c7bec35901a53a0",
+       override: true}
     ]
   end
 
@@ -73,7 +79,7 @@ defmodule Oeuvre.MixProject do
   # See the documentation for `Mix` for more info on aliases.
   defp aliases do
     [
-      setup: ["deps.get", "ecto.setup", "assets.setup", "assets.build"],
+      setup: ["deps.get", "assets.setup", "assets.build"],
       # "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       # "ecto.reset": ["ecto.drop", "ecto.setup"],
       test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],

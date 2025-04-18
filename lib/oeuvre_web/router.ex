@@ -1,6 +1,11 @@
 defmodule OeuvreWeb.Router do
   use OeuvreWeb, :router
 
+  defp put_user_token(conn, _) do
+    token = Phoenix.Token.sign(conn, "user socket", 1)
+    assign(conn, :user_token, token)
+  end
+
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
@@ -8,6 +13,7 @@ defmodule OeuvreWeb.Router do
     plug :put_root_layout, html: {OeuvreWeb.Layouts, :root}
     plug :protect_from_forgery
     plug :put_secure_browser_headers
+    plug :put_user_token
   end
 
   pipeline :api do
@@ -20,25 +26,32 @@ defmodule OeuvreWeb.Router do
     plug :fetch_session
   end
 
+  # pipeline :webrtc_recording do
+  #   plug OeuvreWeb.WebRTCRecording
+  # end
+
+  scope "/", OeuvreWeb do
+    pipe_through [:browser]
+
+    get "/", SessionController, :new
+    get "/nextstep", SessionController, :next_step
+  end
+
   scope "/", OeuvreWeb do
     pipe_through :browser
 
-    get "/", SessionController, :new
-
-    resources "/trials", TrialController, except: [:delete, :index, :edit]
-    resources "/a", AssessmentController, except: [:delete, :index, :edit]
     resources "/images", ImageController
   end
 
   scope "/session", OeuvreWeb do
     pipe_through :api
-    get "/nextstep", SessionController, :next_step
+    post "/savetranscript", SessionController, :save_transcript
   end
-    
+
   scope "/ollama", OeuvreWeb do
     pipe_through :api
 
-    get "/describe", OllamaController, :describe_image
+    post "/describe", OllamaController, :describe_image
     post "/chat", OllamaController, :chat
   end
 
@@ -59,7 +72,6 @@ defmodule OeuvreWeb.Router do
 
     get "/", DemoController, :show
   end
-
 
   scope "/sse", OeuvreWeb do
     pipe_through :sse

@@ -3,31 +3,35 @@ defmodule OeuvreWeb.SseController do
   alias Phoenix.PubSub
   require Logger
 
-  def subscribe(conn, _params) do
-    PubSub.subscribe(Oeuvre.PubSub, "user:123")
-    Logger.debug("Subscribed to #{Oeuvre.PubSub}")
+  def subscribe(conn, %{"signalling_id" => signalling_id}) do
+    PubSub.subscribe(Oeuvre.PubSub, signalling_id)
+    Logger.debug("Subscribed to #{Oeuvre.PubSub} session_id: #{signalling_id}")
 
     conn
     |> put_resp_content_type("text/event-stream")
     |> put_resp_header("cache-control", "no-cache")
     |> send_chunked(200)
-    |> sse_loop()
+    |> sse_loop(signalling_id, true)
   end
 
   # https://code.krister.ee/server-sent-events-with-elixir/
-  defp sse_loop(conn) do
+  defp sse_loop(conn, signalling_id, empty) do
     receive do
       {:plug_conn, :sent} ->
-        sse_loop(conn)
+        sse_loop(conn, signalling_id, true)
 
       "" ->
-        PubSub.unsubscribe(Oeuvre.PubSub, "user:123")
-        conn |> chunk("event: STREAMING_DONE\ndata: \n\n")
-        conn
+        if empty do
+          sse_loop(conn, signalling_id, false)
+        else
+          PubSub.unsubscribe(Oeuvre.PubSub, signalling_id)
+          conn |> chunk("event: STREAMING_DONE\ndata: \n\n")
+          conn
+        end
 
       msg ->
         conn |> chunk("event: STREAMING_CHUNK\ndata: #{msg}\n\n")
-        sse_loop(conn)
+        sse_loop(conn, signalling_id, false)
     end
   end
 end

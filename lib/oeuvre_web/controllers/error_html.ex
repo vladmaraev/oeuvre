@@ -21,4 +21,8 @@ defmodule OeuvreWeb.ErrorHTML do
   def render(template, _assigns) do
     Phoenix.Controller.status_message_from_template(template)
   end
+
+  def render("403.html", _assigns) do
+    "Not authorised"
+  end
 end

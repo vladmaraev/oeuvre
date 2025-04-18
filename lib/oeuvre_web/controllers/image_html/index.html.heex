@@ -8,7 +8,7 @@
 </.header>
 
 <.table id="images" rows={@images} row_click={&JS.navigate(~p"/images/#{&1}")}>
-  <:col :let={image} label="Filename"><%= image.filename %></:col>
+  <:col :let={image} label="Filename">{image.filename}</:col>
   <:action :let={image}>
     <div class="sr-only">
       <.link navigate={~p"/images/#{image}"}>Show</.link>

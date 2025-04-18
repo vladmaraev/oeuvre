@@ -10,9 +10,7 @@ defmodule Oeuvre.SessionsFixtures do
   def session_fixture(attrs \\ %{}) do
     {:ok, session} =
       attrs
-      |> Enum.into(%{
-
-      })
+      |> Enum.into(%{})
       |> Oeuvre.Sessions.create_session()
 
     session
@@ -33,5 +31,34 @@ defmodule Oeuvre.SessionsFixtures do
       |> Oeuvre.Sessions.create_session()
 
     session
+  end
+
+  @doc """
+  Generate a allowed_pid.
+  """
+  def allowed_pid_fixture(attrs \\ %{}) do
+    {:ok, allowed_pid} =
+      attrs
+      |> Enum.into(%{
+        prolific_pid: "some prolific_pid"
+      })
+      |> Oeuvre.Sessions.create_allowed_pid()
+
+    allowed_pid
+  end
+
+  @doc """
+  Generate a transcript.
+  """
+  def transcript_fixture(attrs \\ %{}) do
+    {:ok, transcript} =
+      attrs
+      |> Enum.into(%{
+        moves: [],
+        session_id: 42
+      })
+      |> Oeuvre.Sessions.create_transcript()
+
+    transcript
   end
 end
