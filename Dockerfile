@@ -7,13 +7,13 @@
 # This file is based on these images:
 #
 #   - https://hub.docker.com/r/hexpm/elixir/tags - for the build image
-#   - https://hub.docker.com/_/debian?tab=tags&page=1&name=bullseye-20241111-slim - for the release image
+#   - https://hub.docker.com/_/debian?tab=tags&page=1&name=bullseye-20250407-slim - for the release image
 #   - https://pkgs.org/ - resource for finding needed packages
-#   - Ex: hexpm/elixir:1.17.3-erlang-25.3.2.15-debian-bullseye-20241111-slim
+#   - Ex: hexpm/elixir:1.17.3-erlang-25.3.2.19-debian-bullseye-20250407-slim
 #
 ARG ELIXIR_VERSION=1.17.3
-ARG OTP_VERSION=25.3.2.15
-ARG DEBIAN_VERSION=bullseye-20241111-slim
+ARG OTP_VERSION=25.3.2.19
+ARG DEBIAN_VERSION=bullseye-20250407-slim
 
 ARG BUILDER_IMAGE="hexpm/elixir:${ELIXIR_VERSION}-erlang-${OTP_VERSION}-debian-${DEBIAN_VERSION}"
 ARG RUNNER_IMAGE="debian:${DEBIAN_VERSION}"
@@ -21,8 +21,8 @@ ARG RUNNER_IMAGE="debian:${DEBIAN_VERSION}"
 FROM ${BUILDER_IMAGE} as builder
 
 # install build dependencies
-RUN apt-get update -y && apt-get install -y build-essential git curl \
-    && apt-get install -y nodejs npm \
+RUN sed -i -e's/ main/ main contrib non-free/g' /etc/apt/sources.list && apt-get update -y && apt-get install -y build-essential git curl \
+    && apt-get install -y nodejs npm openssl libsrtp2-dev libssl-dev libopus-dev libfdk-aac-dev libvpx-dev ffmpeg pkg-config \
     && apt-get clean && rm -f /var/lib/apt/lists/*_*
 
 # prepare build dir
