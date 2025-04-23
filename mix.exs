@@ -60,12 +60,8 @@ defmodule Oeuvre.MixProject do
       {:dns_cluster, "~> 0.1.1"},
       {:bandit, "~> 1.5"},
       {:req, "~> 0.5.7"},
-      {:boombox,
-       github: "membraneframework/boombox", ref: "f4ccbfcf4a71d14764fd269b3491d4c862c4d4c2"},
-      {:membrane_webrtc_plugin,
-       github: "membraneframework/membrane_webrtc_plugin",
-       ref: "2bdf80ed73ea7fe9531e76449c7bec35901a53a0",
-       override: true}
+      {:boombox, github: "membraneframework/boombox"},
+      {:membrane_webrtc_plugin, "~> 0.25.3", override: true},
     ]
   end
 
@@ -83,6 +79,7 @@ defmodule Oeuvre.MixProject do
       test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
       "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
       "assets.build": ["tailwind oeuvre", "esbuild oeuvre"],
+      "assets.typecheck": ["cmd npm --prefix assets run typecheck"],
       "assets.deploy": [
         "tailwind oeuvre --minify",
         "esbuild oeuvre --minify",

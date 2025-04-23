@@ -21,8 +21,7 @@ ARG RUNNER_IMAGE="debian:${DEBIAN_VERSION}"
 FROM ${BUILDER_IMAGE} as builder
 
 # install build dependencies
-RUN sed -i -e's/ main/ main contrib non-free/g' /etc/apt/sources.list && apt-get update -y && apt-get install -y build-essential git curl \
-    && apt-get install -y nodejs npm openssl libsrtp2-dev libssl-dev libopus-dev libfdk-aac-dev libvpx-dev ffmpeg pkg-config \
+RUN apt-get update -y && apt-get install -y build-essential git openssl libssl-dev pkg-config \
     && apt-get clean && rm -f /var/lib/apt/lists/*_*
 
 # prepare build dir
@@ -51,8 +50,6 @@ COPY priv priv
 COPY lib lib
 
 COPY assets assets
-
-RUN cd assets && npm install && cd ..
 
 # compile assets
 RUN mix assets.deploy

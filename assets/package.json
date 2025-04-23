@@ -1,11 +1,15 @@
 {
-  "name": "assets",
-  "devDependencies": {},
-  "dependencies": {
+  "devDependencies": {
     "@types/phoenix": "^1.6.6",
     "@types/phoenix_live_view": "^1.0.0",
-    "esbuild": "^0.24.2",
-    "speechstate": "^2.12.0-rc.2"
+    "speechstate": "^2.11.0",
+    "typescript": "^5.8.3",
+    "xstate": "^5.19.2"
   },
-  "trustedDependencies": ["core-js-pure", "p-defer-es5"]
+  "scripts": {
+    "typecheck": "tsc --noEmit --pretty"
+  },
+  "dependencies": {
+    "topbar": "^3.0.0"
+  }
 }
