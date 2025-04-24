@@ -2,6 +2,18 @@ _final: prev:
 let
   pkgs = prev;
 
+  buildMediaPackages =
+    scope:
+    let
+      openssl = scope.openssl;
+      pkg-config = scope.pkg-config;
+    in {
+      inherit
+        openssl
+        pkg-config
+        ;
+    };
+
   buildBeamPackages =
     scope:
     let
@@ -9,8 +21,6 @@ let
 
       erlang = beamPackages.erlang;
       elixir = beamPackages.elixir_1_17;
-      openssl = scope.openssl;
-      pkg-config = scope.pkg-config;
 
       fetchMixDeps = pkgs.beamUtils.fetchMixDeps.override { inherit elixir; };
       buildMixRelease = pkgs.beamUtils.buildMixRelease.override { inherit erlang elixir; };
@@ -64,7 +74,7 @@ rec {
       minimal = buildBeamPackages pkgs.beam_minimal;
     };
     nodePackages = buildNodePackages pkgs;
-    packages = [pkgs.openssl pkgs.pkg-config pkgs.plantuml];
+    mediaPackages = buildMediaPackages pkgs;
   };
 
   myCallPackage = pkgs.lib.callPackageWith (pkgs // { inherit myEnv; });

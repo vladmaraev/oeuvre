@@ -17,7 +17,7 @@ let
 
   inherit (myEnv.beamPackages.minimal) fetchMixDeps buildMixRelease;
   inherit (myEnv.nodePackages) nodejs fetchNpmDeps;
-  inherit (myEnv.packages);
+  inherit (myEnv.mediaPackages) openssl pkg-config;
   
   mixDeps = fetchMixDeps {
     pname = "${pname}-mix-deps";
@@ -54,8 +54,7 @@ buildMixRelease {
   inherit pname version src;
 
   inherit mixDeps;
-  nativeBuildInputs = [ nodejs ] ++ myEnv.packages;
-
+  nativeBuildInputs = [ nodejs openssl pkg-config ];
   removeCookie = false;
 
   preBuild = lib.concatStringsSep "\n" [

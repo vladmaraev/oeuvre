@@ -15,8 +15,8 @@ mkShell {
       myEnv.beamPackages.erlang
       myEnv.beamPackages.elixir
       myEnv.nodePackages.nodejs
-    ] ++ myEnv.packages
-    ++
+    ] ++ [myEnv.mediaPackages.openssl myEnv.mediaPackages.pkg-config]
+    ++ 
     # Linux only
     lib.optionals stdenv.isLinux [
       # for ExUnit notifier
