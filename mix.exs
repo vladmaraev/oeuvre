@@ -78,7 +78,7 @@ defmodule Oeuvre.MixProject do
       # "ecto.reset": ["ecto.drop", "ecto.setup"],
       test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
       "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
-      "assets.build": ["tailwind oeuvre", "esbuild oeuvre"],
+      "assets.build": ["cmd npm --prefix assets install", "tailwind oeuvre", "esbuild oeuvre"],
       "assets.typecheck": ["cmd npm --prefix assets run typecheck"],
       "assets.deploy": [
         "tailwind oeuvre --minify",
