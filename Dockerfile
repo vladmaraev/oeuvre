@@ -20,9 +20,11 @@ ARG RUNNER_IMAGE="debian:${DEBIAN_VERSION}"
 
 FROM ${BUILDER_IMAGE} as builder
 
+
 # install build dependencies
-RUN apt-get update -y && apt-get install -y build-essential git openssl libssl-dev pkg-config \
-    && apt-get clean && rm -f /var/lib/apt/lists/*_*
+RUN sed -i -e's/ main/ main contrib non-free/g' /etc/apt/sources.list && apt-get update -y && \
+  apt-get install -y nodejs npm openssl libsrtp2-dev libssl-dev libopus-dev libfdk-aac-dev libvpx-dev ffmpeg libswscale-dev libswresample-dev libavutil-dev libavformat-dev pkg-config \
+  && apt-get clean && rm -f /var/lib/apt/lists/*_*
 
 # prepare build dir
 WORKDIR /app
@@ -50,7 +52,7 @@ COPY priv priv
 COPY lib lib
 
 COPY assets assets
-
+RUN cd assets && npm install 
 # compile assets
 RUN mix assets.deploy
 
@@ -65,11 +67,33 @@ RUN mix release
 
 # start a new build stage so that the final image will only contain
 # the compiled release and other runtime necessities
-FROM ${RUNNER_IMAGE}
+# FROM ${BUILDER_IMAGE}
+
+# RUN sed -i -e's/ main/ main contrib non-free/g' /etc/apt/sources.list && apt-get update -y && \
+#   apt-get install -y nodejs npm openssl libsrtp2-dev libssl-dev libopus-dev libfdk-aac-dev libvpx-dev ffmpeg libswscale-dev libswresample-dev libavutil-dev libavformat-dev pkg-config \
+#   && apt-get clean && rm -f /var/lib/apt/lists/*_*
+
 
 RUN apt-get update -y && \
-  apt-get install -y libstdc++6 openssl libncurses5 locales ca-certificates \
+  apt-get install -y libstdc++6 openssl libncurses5 locales ca-certificates ffmpeg libvpx-dev libvpx6  vpx-tools \
   && apt-get clean && rm -f /var/lib/apt/lists/*_*
+
+
+# RUN \
+#   apk add --no-cache \
+#   libstdc++6 \
+#   openssl \
+#   libsrtp \
+#   ffmpeg \
+#   fdk-aac \
+#   opus \
+#   openssh-client \
+#   curl \
+#   ncurses \
+#   mesa \
+#   mesa-dri-gallium \
+#   mesa-dev \
+#   ncurses
 
 # Set the locale
 RUN sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen && locale-gen
@@ -78,20 +102,20 @@ ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
 
-WORKDIR "/app"
-RUN chown nobody /app
+# WORKDIR "/app"
+# RUN chown nobody /app
 
-# set runner ENV
+# # # set runner ENV
 ENV MIX_ENV="prod"
 
-# Only copy the final release from the build stage
-COPY --from=builder --chown=nobody:root /app/_build/${MIX_ENV}/rel/oeuvre ./
+# # # Only copy the final release from the build stage
+# COPY --from=builder --chown=nobody:root /app/_build/${MIX_ENV}/rel/oeuvre ./
 
-USER nobody
+# USER nobody
 
-# If using an environment that doesn't automatically reap zombie processes, it is
-# advised to add an init process such as tini via `apt-get install`
-# above and adding an entrypoint. See https://github.com/krallin/tini for details
-# ENTRYPOINT ["/tini", "--"]
+# # If using an environment that doesn't automatically reap zombie processes, it is
+# # advised to add an init process such as tini via `apt-get install`
+# # above and adding an entrypoint. See https://github.com/krallin/tini for details
+# # ENTRYPOINT ["/tini", "--"]
 
-CMD ["/app/bin/server"]
+# CMD ["/app/bin/server"]

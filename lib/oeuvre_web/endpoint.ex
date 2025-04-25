@@ -15,10 +15,6 @@ defmodule OeuvreWeb.Endpoint do
     websocket: [connect_info: [session: @session_options]],
     longpoll: [connect_info: [session: @session_options]]
 
-  socket "/socket", OeuvreWeb.SpeechStateSocket,
-    websocket: true,
-    longpoll: false
-
   socket "/signalling", Membrane.WebRTC.PhoenixSignaling.Socket,
     websocket: true,
     longpoll: false

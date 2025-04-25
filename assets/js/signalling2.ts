@@ -39,7 +39,7 @@ type Connect = (
 ) => Promise<{ pc: RTCPeerConnection; socket: Socket }>;
 const connect: Connect = (suffix, mode) => {
   return new Promise(async (resolve, reject) => {
-    const socket = new Socket("/signalling", {
+    const socket = new Socket("signalling", {
       params: {
         token: (window as any).userToken,
       },
