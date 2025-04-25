@@ -16,7 +16,7 @@ defmodule OeuvreWeb.Endpoint do
     longpoll: [connect_info: [session: @session_options]]
 
   socket "/signalling", Membrane.WebRTC.PhoenixSignaling.Socket,
-    websocket: true,
+    websocket: [check_origin: ["https://dev.clasp.gu.se"]],
     longpoll: false
 
   
