@@ -7,7 +7,7 @@
 }:
 let
   # TODO: adjust pname, version and src
-  pname = "example";
+  pname = "oeuvre";
   version = "0.1.0";
   src = nix-gitignore.gitignoreSource [
     "/flake.nix"
@@ -15,15 +15,14 @@ let
     # TODO: add extra patterns besides ones specified by .gitignore, such as /fly.toml
   ] ../.;
 
-  inherit (myEnv.beamPackages.minimal) fetchMixDeps buildMixRelease;
+  inherit (myEnv.beamPackages) fetchMixDeps buildMixRelease buildBeamPackages;
   inherit (myEnv.nodePackages) nodejs fetchNpmDeps;
-  inherit (myEnv.mediaPackages) openssl pkg-config;
-  
+
   mixDeps = fetchMixDeps {
     pname = "${pname}-mix-deps";
     inherit version src;
     # TODO: replace fake hash
-    hash = "sha256-39PSTRn7Pwma/BPoTA9pBVbucguzADwnr1MVPOh7ufE=";
+    hash = "sha256-jEXj/7n59hlKAlbT74dDpAAVHUoWkokrL94bAfFP3ag=";
   };
 
   npmDeps = fetchNpmDeps {
@@ -54,7 +53,8 @@ buildMixRelease {
   inherit pname version src;
 
   inherit mixDeps;
-  nativeBuildInputs = [ nodejs openssl pkg-config ];
+  nativeBuildInputs = [ nodejs ];
+
   removeCookie = false;
 
   preBuild = lib.concatStringsSep "\n" [
@@ -73,7 +73,7 @@ buildMixRelease {
 
     # link node_modules
     ''
-      ln -s ${npmDeps}/node_modules assets/node_modules
+          ln -s ${npmDeps}/node_modules assets/node_modules
     ''
   ];
 

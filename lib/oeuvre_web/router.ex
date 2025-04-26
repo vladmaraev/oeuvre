@@ -61,18 +61,6 @@ defmodule OeuvreWeb.Router do
     get "/", AzureController, :token
   end
 
-  scope "/demo", OeuvreWeb do
-    pipe_through :browser
-
-    get "/", DemoController, :demo
-  end
-
-  scope "/demo-live", OeuvreWeb do
-    pipe_through :browser
-
-    get "/", DemoController, :show
-  end
-
   scope "/sse", OeuvreWeb do
     pipe_through :sse
 

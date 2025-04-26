@@ -46,6 +46,7 @@ const connect: Connect = (suffix, mode) => {
     });
     socket.connect();
     let egressChannel = socket.channel(`${signallingId}_${suffix}`);
+    console.debug("Joining egress signaling socket...", socket, egressChannel, `${signallingId}_${suffix}`);
     egressChannel
       .join()
       .receive("ok", async (resp) => {

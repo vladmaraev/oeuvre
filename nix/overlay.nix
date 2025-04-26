@@ -2,17 +2,7 @@ _final: prev:
 let
   pkgs = prev;
 
-  buildMediaPackages =
-    scope:
-    let
-      openssl = scope.openssl;
-      pkg-config = scope.pkg-config;
-    in {
-      inherit
-        openssl
-        pkg-config
-        ;
-    };
+  systemPackages = [pkgs.coreutils];
 
   buildBeamPackages =
     scope:
@@ -21,12 +11,28 @@ let
 
       erlang = beamPackages.erlang;
       elixir = beamPackages.elixir_1_17;
-
+      
+      openssl = pkgs.openssl;
+      srtp = pkgs.srtp;
+      fdk_aac = pkgs.fdk_aac;
+      ffmpeg = pkgs.ffmpeg-full.override { withMp3lame = true; };
+      libopus = pkgs.libopus;
+      libmad = pkgs.libmad;
+      libvpx = pkgs.libvpx;
+      
       fetchMixDeps = pkgs.beamUtils.fetchMixDeps.override { inherit elixir; };
       buildMixRelease = pkgs.beamUtils.buildMixRelease.override { inherit erlang elixir; };
     in
     {
       inherit
+        libvpx
+        libmad
+        libopus
+        ffmpeg
+        fdk_aac 
+        srtp
+        openssl
+        
         erlang
         elixir
         fetchMixDeps
@@ -74,7 +80,7 @@ rec {
       minimal = buildBeamPackages pkgs.beam_minimal;
     };
     nodePackages = buildNodePackages pkgs;
-    mediaPackages = buildMediaPackages pkgs;
+    systemPackages = systemPackages;
   };
 
   myCallPackage = pkgs.lib.callPackageWith (pkgs // { inherit myEnv; });
