@@ -8,7 +8,7 @@ defmodule OeuvreWeb.SessionController do
   alias Oeuvre.Sessions
   alias Oeuvre.Stimuli
 
-  alias Membrane.WebRTC.PhoenixSignaling
+  # alias Membrane.WebRTC.PhoenixSignaling
 
   defp recordings_path,
     do: Application.fetch_env!(:oeuvre, OeuvreWeb.SessionController)[:recordings_path]
@@ -80,23 +80,23 @@ defmodule OeuvreWeb.SessionController do
 
             unique_id = UUID.uuid4()
 
-            Task.start(fn ->
-              input_sg = PhoenixSignaling.new("#{unique_id}_egress_screen")
+            # Task.start(fn ->
+            #   input_sg = PhoenixSignaling.new("#{unique_id}_egress_screen")
 
-              Boombox.run(
-                input: {:webrtc, input_sg},
-                output: {:mp4, "#{recordings_path()}/x_screen_#{prolific_pid}_#{unique_id}.mp4"}
-              )
-            end)
+            #   Boombox.run(
+            #     input: {:webrtc, input_sg},
+            #     output: {:mp4, "#{recordings_path()}/x_screen_#{prolific_pid}_#{unique_id}.mp4"}
+            #   )
+            # end)
 
-            Task.start(fn ->
-              input_sg = PhoenixSignaling.new("#{unique_id}_egress_mic")
+            # Task.start(fn ->
+            #   input_sg = PhoenixSignaling.new("#{unique_id}_egress_mic")
 
-              Boombox.run(
-                input: {:webrtc, input_sg},
-                output: {:mp4, "#{recordings_path()}/x_mic_#{prolific_pid}_#{unique_id}.mp4"}
-              )
-            end)
+            #   Boombox.run(
+            #     input: {:webrtc, input_sg},
+            #     output: {:mp4, "#{recordings_path()}/x_mic_#{prolific_pid}_#{unique_id}.mp4"}
+            #   )
+            # end)
 
             render(conn, :start,
               # description: description,

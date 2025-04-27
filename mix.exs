@@ -60,8 +60,9 @@ defmodule Oeuvre.MixProject do
       {:dns_cluster, "~> 0.1.1"},
       {:bandit, "~> 1.5"},
       {:req, "~> 0.5.7"},
-      {:boombox, github: "membraneframework/boombox"},
-      {:membrane_webrtc_plugin, "~> 0.25.3", override: true},
+      # {:boombox, github: "membraneframework/boombox"},
+      # {:membrane_webrtc_plugin, "~> 0.25.3", override: true},
+      { :elixir_uuid, "~> 1.2" }
     ]
   end
 
