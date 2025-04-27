@@ -31,7 +31,7 @@ in
 
     config = {
       Env = [
-        "LOCALE_ARCHIVE=${glibcLocalesUtf8}/lib/locale/locale-archive"
+        # "LOCALE_ARCHIVE=${glibcLocalesUtf8}/lib/locale/locale-archive"
         "LC_ALL=en_US.UTF-8"
         "TERM=vt100"
       ];

@@ -62,7 +62,7 @@ defmodule Oeuvre.MixProject do
       {:req, "~> 0.5.7"},
       # {:boombox, github: "membraneframework/boombox"},
       # {:membrane_webrtc_plugin, "~> 0.25.3", override: true},
-      { :elixir_uuid, "~> 1.2" }
+      { :uuid, "~> 1.1" }
     ]
   end
 
