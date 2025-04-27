@@ -12,13 +12,13 @@
 mkShell {
   packages =
     [
-      myEnv.beamPackages.libvpx
-      myEnv.beamPackages.libmad
-      myEnv.beamPackages.libopus
-      myEnv.beamPackages.ffmpeg
-      myEnv.beamPackages.fdk_aac
-      myEnv.beamPackages.srtp
-      myEnv.beamPackages.openssl
+      # myEnv.beamPackages.libvpx
+      # myEnv.beamPackages.libmad
+      # myEnv.beamPackages.libopus
+      # myEnv.beamPackages.ffmpeg
+      # myEnv.beamPackages.fdk_aac
+      # myEnv.beamPackages.srtp
+      # myEnv.beamPackages.openssl
       
       myEnv.beamPackages.erlang
       myEnv.beamPackages.elixir
@@ -60,9 +60,5 @@ mkShell {
     # limit history to current project
     export ERL_AFLAGS="-kernel shell_history enabled -kernel shell_history_path '\"$PWD/.erlang-history\"'"
 
-    export PKG_CONFIG_PATH=${myEnv.beamPackages.libvpx.dev}/lib/pkgconfig:${myEnv.beamPackages.libmad.dev}/lib/pkgconfig:${myEnv.beamPackages.libopus.dev}/lib/pkgconfig:${myEnv.beamPackages.ffmpeg.dev}/lib/pkgconfig:${myEnv.beamPackages.fdk_aac.dev}/lib/pkgconfig:${myEnv.beamPackages.srtp.dev}/lib/pkgconfig:$PKG_CONFIG_PATH
-
-    export DATABASE_URL=postgresql://postgres.ttlfngopsrcdgjlvuitl:S4quCek92lCovnrc@aws-0-eu-north-1.pooler.supabase.com:6543/postgres
-    export AZURE_KEY=d20e2774178d48d7941be63ee9971853
   '';
 }

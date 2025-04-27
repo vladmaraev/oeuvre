@@ -22,7 +22,7 @@ let
     pname = "${pname}-mix-deps";
     inherit version src;
     # TODO: replace fake hash
-    hash = "sha256-jEXj/7n59hlKAlbT74dDpAAVHUoWkokrL94bAfFP3ag=";
+    hash = "sha256-7JT0hANxayU5Zt26jz9kdSfowubTOlL6GMpE+4f3hYk=";
   };
 
   npmDeps = fetchNpmDeps {

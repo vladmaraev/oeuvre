@@ -2,7 +2,9 @@ _final: prev:
 let
   pkgs = prev;
 
-  systemPackages = [pkgs.coreutils];
+  systemPackages = [
+    # pkgs.coreutils
+  ];
 
   buildBeamPackages =
     scope:
@@ -12,26 +14,26 @@ let
       erlang = beamPackages.erlang;
       elixir = beamPackages.elixir_1_17;
       
-      openssl = pkgs.openssl;
-      srtp = pkgs.srtp;
-      fdk_aac = pkgs.fdk_aac;
-      ffmpeg = pkgs.ffmpeg-full.override { withMp3lame = true; };
-      libopus = pkgs.libopus;
-      libmad = pkgs.libmad;
-      libvpx = pkgs.libvpx;
+      # openssl = pkgs.openssl;
+      # srtp = pkgs.srtp;
+      # fdk_aac = pkgs.fdk_aac;
+      # ffmpeg = pkgs.ffmpeg-full.override { withMp3lame = true; };
+      # libopus = pkgs.libopus;
+      # libmad = pkgs.libmad;
+      # libvpx = pkgs.libvpx;
       
       fetchMixDeps = pkgs.beamUtils.fetchMixDeps.override { inherit elixir; };
       buildMixRelease = pkgs.beamUtils.buildMixRelease.override { inherit erlang elixir; };
     in
     {
       inherit
-        libvpx
-        libmad
-        libopus
-        ffmpeg
-        fdk_aac 
-        srtp
-        openssl
+        # libvpx
+        # libmad
+        # libopus
+        # ffmpeg
+        # fdk_aac 
+        # srtp
+        # openssl
         
         erlang
         elixir

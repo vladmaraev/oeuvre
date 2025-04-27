@@ -6,6 +6,7 @@
   glibcLocalesUtf8,
   coreutils,
   curl,
+  cacert,
   ...
 }:
 let

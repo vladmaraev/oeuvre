@@ -2,7 +2,7 @@
   description = "Elixir development environment for Phoenix project";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs";
+    nixpkgs.url = "github:NixOS/nixpkgs/24.11";
     flake-utils.url = "github:numtide/flake-utils";
     beam-utils = {
       url = "github:nix-giant/beam-utils";
