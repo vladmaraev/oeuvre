@@ -48,7 +48,7 @@ defmodule OeuvreWeb.SessionHTML do
             You will be asked to share your microphone and this tab of your browser.
           </li>
           <li><span class="me-2">🤫</span> Make sure you are sitting in a quiet environment.</li>
-          <li><span class="me-2">🎧</span> Ideally, a headset.</li>
+          <li><span class="me-2">🎧</span> Ideally, use a headset.</li>
         </ol>
 
         <p class="pl-4 text-sm font-semibold">Ideas to discuss</p>
