@@ -65,7 +65,7 @@ config :mime, :types, %{
   "text/event-stream" => ["sse"]
 }
 
-config :bundlex, :disable_precompiled_os_deps, apps: [:ex_libsrtp, :membrane_aac_fdk_plugin, :membrane_opus_plugin, :membrane_mp3_mad_plugin, :membrane_vpx_plugin, :membrane_transcoder_plugin]
+# config :bundlex, :disable_precompiled_os_deps, apps: [:ex_libsrtp, :membrane_aac_fdk_plugin, :membrane_opus_plugin, :membrane_mp3_mad_plugin, :membrane_vpx_plugin, :membrane_transcoder_plugin]
 
 
 # Import environment specific config. This must remain at the bottom

@@ -15,9 +15,9 @@ defmodule OeuvreWeb.Endpoint do
     websocket: [connect_info: [session: @session_options]],
     longpoll: [connect_info: [session: @session_options]]
 
-  # socket "/signalling", Membrane.WebRTC.PhoenixSignaling.Socket,
-  #   websocket: [check_origin: ["https://dev.clasp.gu.se"]],
-  #   longpoll: false
+  socket "/signalling", Membrane.WebRTC.PhoenixSignaling.Socket,
+    websocket: [check_origin: ["https://dev.clasp.gu.se", "http://localhost:4000"]],
+    longpoll: false
 
   
   # Serve at "/" the static files from "priv/static" directory.
