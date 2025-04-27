@@ -532,7 +532,7 @@ const dmMachine = setup({
         (window.location.pathname =
           window.location.pathname === "/"
             ? "/session/nextstep"
-            : window.location.pathname + "/session/nextstep"),
+            : window.location.pathname + "session/nextstep"),
       type: "final",
     },
   },
