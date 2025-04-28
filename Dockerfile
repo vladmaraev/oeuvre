@@ -25,7 +25,7 @@ RUN cd assets && npm install
 FROM ${BUILDER_IMAGE} as builder
 
 # install build dependencies
-RUN apt-get update -y && apt-get install -y build-essential git \
+RUN apt-get update -y && apt-get install -y build-essential git pkg-config libssl-dev libvpx-dev \
     && apt-get clean && rm -f /var/lib/apt/lists/*_*
 
 # prepare build dir
