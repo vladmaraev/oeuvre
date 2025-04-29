@@ -83,8 +83,13 @@ ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
 
+# Directory for storing the recordings
+RUN mkdir -p /srv/data
+
 WORKDIR "/app"
 RUN chown nobody /app
+RUN chown nobody /srv/data
+
 
 # set runner ENV
 ENV MIX_ENV="prod"
