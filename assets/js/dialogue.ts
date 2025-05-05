@@ -244,7 +244,7 @@ const dmMachine = setup({
     },
   }),
   id: "DM",
-  initial: "Prepare",
+  initial: "SetupRecording",
   on: {
     SETUP: {
       actions: assign(({ event }) => ({
@@ -508,7 +508,7 @@ const dmMachine = setup({
         },
         Next: {
           entry: [
-            // { type: "stop_recording" },
+            { type: "stop_recording" },
             () => (document.getElementById("survey")!.hidden = false),
             () => (document.getElementById("container")!.hidden = true),
           ],
