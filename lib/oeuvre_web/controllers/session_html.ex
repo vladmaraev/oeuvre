@@ -74,7 +74,7 @@ defmodule OeuvreWeb.SessionHTML do
     ~H"""
     <div id="survey" class="w-full h-screen" hidden>
       <iframe
-        src="https://samgu.eu.qualtrics.com/jfe/form/SV_dmwElLOHB3KX4x0?prolific_pid=#{@prolific_pid}"
+        src={"https://samgu.eu.qualtrics.com/jfe/form/SV_dmwElLOHB3KX4x0?prolific_pid=#{@prolific_pid}"}
         width="100%"
         height="100%"
       >

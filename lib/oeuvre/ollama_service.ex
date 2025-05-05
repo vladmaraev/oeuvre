@@ -65,6 +65,7 @@ defmodule Oeuvre.OllamaService do
     processed =
       content
       |> String.replace("\"", "")
+      |> String.replace("&", " and ")
       |> String.replace(~r/\[[Aa]pology\]/, apology)
       |> String.replace(~r/\[.*\]/, "")
 
