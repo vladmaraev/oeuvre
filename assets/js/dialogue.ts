@@ -118,9 +118,9 @@ const dmMachine = setup({
             (context.condition === "1"
               ? sorry_laughter_utterance
               : sorry_utterance) +
-            `It seems our time for discussion is up.` +
+            `It seems our time for discussion is up. ` +
             (context.step !== 1
-              ? `Please fill and submit the survey.`
+              ? `Please fill and submit the survey. `
               : `Make sure you have filled the form this time too. We will then redirect you to the final survey. Hope you have a truly great day!`),
         },
       }),
