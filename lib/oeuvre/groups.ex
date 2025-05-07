@@ -20,7 +20,7 @@ defmodule Oeuvre.Groups do
     next =
       case Repo.one(from g in Group, where: g.id == ^current_group.id + 1) do
         nil ->
-          Repo.one(from g in Group, where: g.id == 1)
+          Repo.one(from g in Group, where: g.id == 17)
 
         x ->
           x
