@@ -68,10 +68,12 @@ defmodule Oeuvre.OllamaService do
       |> String.replace("&", " and ")
       |> String.replace(~r/\[[Aa]pology\]/, apology)
       |> String.replace(~r/\[.*\]/, "")
+      |> String.replace(~r/\(.*\)/, "")
+
 
     PubSub.broadcast(Oeuvre.PubSub, signalling_id, processed)
 
-    Logger.debug("[broadcast to #{signalling_id}]>>> #{processed}")
+    Logger.info("[broadcast to #{signalling_id}]>>> {#{processed}}")
   end
 
   def chat(signalling_id, image_description, history \\ [], condition) do

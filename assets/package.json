@@ -2,7 +2,7 @@
   "devDependencies": {
     "@types/phoenix": "^1.6.6",
     "@types/phoenix_live_view": "^1.0.0",
-    "speechstate": "^2.12.0-rc.2",
+    "speechstate": "2.12.0",
     "typescript": "^5.8.3",
     "xstate": "^5.19.2"
   },
@@ -11,5 +11,6 @@
   },
   "dependencies": {
     "topbar": "^3.0.0"
-  }
+  },
+  "packageManager": "yarn@3.6.4+sha256.7f7d51b38db0d94adf25c512e3f3d3b47d23c97922eecc540f7440f116bdb99a"
 }
