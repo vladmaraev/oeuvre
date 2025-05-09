@@ -70,7 +70,6 @@ defmodule Oeuvre.OllamaService do
       |> String.replace(~r/\[.*\]/, "")
       |> String.replace(~r/\(.*\)/, "")
 
-
     PubSub.broadcast(Oeuvre.PubSub, signalling_id, processed)
 
     Logger.info("[broadcast to #{signalling_id}]>>> {#{processed}}")

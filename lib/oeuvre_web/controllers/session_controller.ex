@@ -29,10 +29,17 @@ defmodule OeuvreWeb.SessionController do
     pid in (Sessions.list_allowed_pids() |> Enum.map(fn x -> x.prolific_pid end))
   end
 
-  defp qualtrics_final_redirect(conn, prolific_pid) do
+  defp qualtrics_final_redirect(conn, prolific_pid, prolific_session_id, prolific_study_id) do
     redirect(conn,
       external:
-        "https://samgu.eu.qualtrics.com/jfe/form/SV_3f0mHKnrQPkx8kC?prolific_pid=#{prolific_pid}"
+        "https://samgu.eu.qualtrics.com/jfe/form/SV_3f0mHKnrQPkx8kC?prolific_pid=#{prolific_pid}&prolific_session_id=#{prolific_session_id}&prolific_study_id=#{prolific_study_id}"
+    )
+  end
+
+  defp qualtrics_redirect(conn, prolific_pid, prolific_session_id, prolific_study_id, step) do
+    redirect(conn,
+      external:
+        "https://samgu.eu.qualtrics.com/jfe/form/SV_dmwElLOHB3KX4x0?prolific_pid=#{prolific_pid}&prolific_session_id=#{prolific_session_id}&prolific_study_id=#{prolific_study_id}&step=#{step}"
     )
   end
 
@@ -66,9 +73,33 @@ defmodule OeuvreWeb.SessionController do
         })
 
       session ->
-        case session.step do
-          -1 ->
-            qualtrics_final_redirect(conn, prolific_pid)
+        Logger.info(inspect({session.step, session.step_complete}))
+
+        case {session.step, session.step_complete} do
+          {1, true} ->
+            Sessions.update_session(session, %{step: -1})
+
+            qualtrics_redirect(
+              conn,
+              prolific_pid,
+              prolific_session_id,
+              prolific_study_id,
+              session.step
+            )
+
+          {0, true} ->
+            Sessions.update_session(session, %{step: 1, step_complete: false})
+
+            qualtrics_redirect(
+              conn,
+              prolific_pid,
+              prolific_session_id,
+              prolific_study_id,
+              session.step
+            )
+
+          {-1, _} ->
+            qualtrics_final_redirect(conn, prolific_pid, prolific_session_id, prolific_study_id)
 
           _ ->
             group = Groups.get_group!(session.group_id)
@@ -111,30 +142,16 @@ defmodule OeuvreWeb.SessionController do
     end
   end
 
-  def next_step(conn, %{
-        "prolific_pid" => prolific_pid,
-        "session_id" => prolific_session_id,
-        "study_id" => prolific_study_id
+  def complete_step(conn, %{
+        "prolific_pid" => prolific_pid
       }) do
     case Sessions.get_prolific_session(prolific_pid) do
       nil ->
         raise Ecto.NoResultsError
 
       session ->
-        group = Groups.get_group!(session.group_id)
-
-        if session.step == length(group.conditions) - 1 do
-          Sessions.update_session(session, %{step: -1})
-          qualtrics_final_redirect(conn, prolific_pid)
-        else
-          Sessions.update_session(session, %{step: session.step + 1})
-
-          new(conn, %{
-            "prolific_pid" => prolific_pid,
-            "session_id" => prolific_session_id,
-            "study_id" => prolific_study_id
-          })
-        end
+        Sessions.update_session(session, %{step_complete: true})
+        json(conn, %{status: "success"})
     end
   end
 

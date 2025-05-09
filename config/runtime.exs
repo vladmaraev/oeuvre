@@ -31,10 +31,8 @@ config :oeuvre, Oeuvre.AzureService,
       environment variable AZURE_KEY is missing.
       """)
 
-
 config :oeuvre, OeuvreWeb.SessionController,
-       recordings_path: System.get_env("RECORDINGS_PATH") || "tmp"
-
+  recordings_path: System.get_env("RECORDINGS_PATH") || "tmp"
 
 if config_env() == :prod do
   database_url =

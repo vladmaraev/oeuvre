@@ -10,6 +10,8 @@
     "typecheck": "tsc --noEmit --pretty"
   },
   "dependencies": {
+    "phoenix": "^1.7.21",
+    "phoenix_live_view": "^1.0.11",
     "topbar": "^3.0.0"
   },
   "packageManager": "yarn@3.6.4+sha256.7f7d51b38db0d94adf25c512e3f3d3b47d23c97922eecc540f7440f116bdb99a"

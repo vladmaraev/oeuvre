@@ -53,6 +53,19 @@ const dmMachine = setup({
       });
       return response.json();
     }),
+    completeStep: fromPromise<any, { prolific_pid: string }>(
+      async ({ input }) => {
+        const response = await fetch(
+          "session/completestep?prolific_pid=" + input.prolific_pid,
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          },
+        );
+        return response.json();
+      },
+    ),
     callGpt: fromPromise<
       any,
       { description: string; history: Move[]; condition: string }
@@ -484,7 +497,7 @@ const dmMachine = setup({
             LISTEN_COMPLETE: "MoveOn",
           },
           after: {
-            10_000: "MoveOn",
+            30_000: "MoveOn",
           },
         },
         MoveOn: {
@@ -509,7 +522,7 @@ const dmMachine = setup({
         Next: {
           entry: [
             { type: "stop_recording" },
-            () => (document.getElementById("survey")!.hidden = false),
+            // () => (document.getElementById("survey")!.hidden = false),
             () => (document.getElementById("container")!.hidden = true),
           ],
           meta: {
@@ -518,7 +531,7 @@ const dmMachine = setup({
           always: [
             {
               target: "#DM.Done",
-              guard: ({ context }) => context.surveyFilled,
+              // guard: ({ context }) => context.surveyFilled,
             },
           ],
         },
@@ -528,12 +541,22 @@ const dmMachine = setup({
       meta: {
         view: "done",
       },
-      entry: () =>
-        (window.location.pathname =
-          window.location.pathname === "/"
-            ? "/nextstep"
-            : window.location.pathname + "nextstep"),
-      type: "final",
+      initial: "CompleteStep",
+      states: {
+        CompleteStep: {
+          invoke: {
+            src: "completeStep",
+            input: ({ context }) => {
+              return { prolific_pid: context.prolific_pid! };
+            },
+            onDone: "Fin",
+          },
+        },
+        Fin: {
+          entry: () => window.location.reload(),
+          type: "final",
+        },
+      },
     },
   },
 });

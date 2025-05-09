@@ -7,7 +7,6 @@ defmodule Oeuvre.Sessions.Transcript do
     field :session_id, :integer
     field :step, :integer
 
-
     timestamps(type: :utc_datetime)
   end
 

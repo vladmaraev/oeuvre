@@ -1,11 +1,13 @@
-<.instruction/>
+<.instruction />
 
-<div class="flex items-start gap-4 h-full">
-  <div class="w-full mt-10 flex flex-col items-start" id="container" data-signalling-id={@signalling_id} hidden>
-    <.avatar condition={@condition}/>
-    <.image image64={@image}/>
-  </div>
-  <.survey prolific_pid={@prolific_pid} />
+<div
+  class="w-full mt-10 flex flex-col items-start"
+  id="container"
+  data-signalling-id={@signalling_id}
+  hidden
+>
+  <.avatar condition={@condition} />
+  <.image image64={@image} />
 </div>
 
 <.script
@@ -15,4 +17,3 @@
   prolific_pid={@prolific_pid}
   condition={@condition}
 />
-

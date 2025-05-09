@@ -1,11 +1,12 @@
 import Config
 # Configure your database
 config :oeuvre, Oeuvre.Repo,
-  url: System.get_env("DATABASE_URL") ||
-  raise("""
-  environment variable DATABASE_URL is missing.
-  For example: ecto://USER:PASS@HOST/DATABASE
-  """)
+  url:
+    System.get_env("DATABASE_URL") ||
+      raise("""
+      environment variable DATABASE_URL is missing.
+      For example: ecto://USER:PASS@HOST/DATABASE
+      """)
 
 # For development, we disable any cache and enable
 # debugging and code reloading.
@@ -23,8 +24,7 @@ config :oeuvre, OeuvreWeb.Endpoint,
   secret_key_base: "+YByVKQTBTmos5RgOE2W59CJjcF7VB7KdOApbkq051XymYPpz7hd+OpzlCmd+UWC",
   watchers: [
     esbuild: {Esbuild, :install_and_run, [:oeuvre, ~w(--sourcemap=inline --watch)]},
-    tailwind: {Tailwind, :install_and_run, [:oeuvre, ~w(--watch)]},
-    npm: ["--prefix", "assets", "run", "typecheck", "--", "--watch"]
+    tailwind: {Tailwind, :install_and_run, [:oeuvre, ~w(--watch)]}
   ]
 
 # ## SSL Support

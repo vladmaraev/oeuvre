@@ -223,7 +223,9 @@ defmodule Oeuvre.SessionsTest do
       transcript = transcript_fixture()
       update_attrs = %{moves: [], session_id: 43}
 
-      assert {:ok, %Transcript{} = transcript} = Sessions.update_transcript(transcript, update_attrs)
+      assert {:ok, %Transcript{} = transcript} =
+               Sessions.update_transcript(transcript, update_attrs)
+
       assert transcript.moves == []
       assert transcript.session_id == 43
     end
