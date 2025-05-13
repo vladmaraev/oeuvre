@@ -22,18 +22,18 @@ defmodule OeuvreWeb.OllamaController do
       ) do
     PubSub.subscribe(Oeuvre.PubSub, signalling_id)
     OllamaService.chat(signalling_id, description, history, condition)
-    result = loop("")
+    result = loop("", true)
     Logger.debug("[OllamaController result] #{result}")
     PubSub.unsubscribe(Oeuvre.PubSub, signalling_id)
     json(conn, %{role: "assistant", content: result})
   end
 
-  defp loop(string) do
+  defp loop(string, empty) do
     receive do
       "" ->
-        case string do
-          "" ->
-            loop(string)
+        case empty do
+          true ->
+            loop(string, false)
 
           _ ->
             string
@@ -41,8 +41,8 @@ defmodule OeuvreWeb.OllamaController do
 
       msg ->
         case String.contains?(msg, "<s />") do
-          true -> loop(string <> " [apology] ")
-          _ -> loop(string <> msg)
+          true -> loop(string <> " [apology] ", false)
+          _ -> loop(string <> msg, false)
         end
     end
   end
