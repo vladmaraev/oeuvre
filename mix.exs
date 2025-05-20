@@ -61,7 +61,8 @@ defmodule Oeuvre.MixProject do
       {:bandit, "~> 1.5"},
       {:req, "~> 0.5.7"},
       {:boombox, github: "membraneframework/boombox"},
-      {:membrane_webrtc_plugin, "~> 0.25.3", override: true}
+      {:membrane_webrtc_plugin, "~> 0.25.3", override: true},
+      {:benchee, "~> 1.0", only: :dev}
       # { :uuid, "~> 1.1" }
     ]
   end
