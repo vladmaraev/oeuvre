@@ -184,7 +184,7 @@ const dmMachine = setup({
     }),
     enqueue_input_timeout: assign(({ context }) => {
       const utterance =
-        "(the user is not saying anything or you can't hear them)";
+        "[the user is not saying anything or you can't hear them]";
       const newIS = {
         ...context.is,
         moves: [

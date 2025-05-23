@@ -95,7 +95,7 @@ defmodule Oeuvre.OllamaService do
         acc = Req.Response.get_private(resp, :acc)
 
         resp =
-          case {String.contains?(decoded_data, "["), String.contains?(decoded_data, "]"),
+          case {String.contains?(decoded_data, ["[", "("]), String.contains?(decoded_data, ["]", ")"]),
                 is_nil(acc)} do
             # [|...
             {true, false, true} ->
