@@ -39,7 +39,7 @@ defmodule Oeuvre.OllamaService do
     \n\nYou will be chatting with the user using spoken language. Be specific!
     \n\nInstead of apologising send one token in brackets, like this: [apology]. Don't produce words like "sorry" and so on.  But you can explain the reasons for the apology.
     \n\nFor instance, if the user is silent: [apology] I didn't hear you.
-    \n\nPlease, be consise. 
+    \n\nPlease, be consise. Limit your response to 20 words.
     """
   end
 
@@ -69,6 +69,7 @@ defmodule Oeuvre.OllamaService do
       |> String.replace(~r/\[[Aa]pology\]/, apology)
       |> String.replace(~r/\[.*\]/, "")
       |> String.replace(~r/\(.*\)/, "")
+      |> String.replace(~r/\*\*.*\*\*/, "")
 
     PubSub.broadcast(Oeuvre.PubSub, signalling_id, processed)
 
@@ -85,7 +86,7 @@ defmodule Oeuvre.OllamaService do
 
     Req.post!("#{ollama_base_url()}/api/chat",
       json: %{
-        model: "mistral-nemo:12b",
+        model: "llama3.1:70b",
         stream: true,
         messages: messages
       },

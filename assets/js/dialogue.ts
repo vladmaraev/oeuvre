@@ -159,7 +159,7 @@ const dmMachine = setup({
     listen: ({ context }) =>
       context.ssRef.send({
         type: "LISTEN",
-        value: { noInputTimeout: 6000 },
+        value: { noInputTimeout: 6000, completeTimeout: 1000 },
       }),
     control: ({ context }) =>
       context.ssRef.send({
