@@ -25,8 +25,9 @@ defmodule OeuvreWeb.SessionController do
     Enum.at(group.conditions, step)
   end
 
-  defp authorised?(pid) do
-    pid in (Sessions.list_allowed_pids() |> Enum.map(fn x -> x.prolific_pid end))
+  def authorised?(pid, study_id) do
+    # pid in (Sessions.list_allowed_pids() |> Enum.map(fn x -> x.prolific_pid end))
+    study_id == "10000"
   end
 
   defp qualtrics_final_redirect(conn, prolific_pid, prolific_session_id, prolific_study_id) do
@@ -50,7 +51,7 @@ defmodule OeuvreWeb.SessionController do
       }) do
     case Sessions.get_prolific_session(prolific_pid) do
       nil ->
-        if not authorised?(prolific_pid) do
+        if not authorised?(prolific_pid, prolific_study_id) do
           raise UnauthorisedError, "access denied"
         end
 
