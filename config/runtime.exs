@@ -22,6 +22,7 @@ end
 
 config :oeuvre, Oeuvre.OllamaService,
   host: System.get_env("OLLAMA_HOST") || "localhost",
+  chat_host: System.get_env("OLLAMA_CHAT_HOST") || System.get_env("OLLAMA_HOST") || "localhost",
   port: System.get_env("OLLAMA_PORT") || "11434"
 
 config :oeuvre, Oeuvre.AzureService,

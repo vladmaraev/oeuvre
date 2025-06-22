@@ -11,6 +11,12 @@ defmodule Oeuvre.OllamaService do
     "http://#{host}:#{port}"
   end
 
+  defp ollama_chat_url do
+    host = Application.fetch_env!(:oeuvre, Oeuvre.OllamaService)[:chat_host]
+    port = Application.fetch_env!(:oeuvre, Oeuvre.OllamaService)[:port]
+    "http://#{host}:#{port}"
+  end
+
   def get_image_base64(imgname) do
     {:ok, %{:status => status, :body => body}} =
       Req.get(
@@ -84,7 +90,10 @@ defmodule Oeuvre.OllamaService do
 
     Logger.debug("<<< #{inspect(messages)}")
 
-    Req.post!("#{ollama_base_url()}/api/chat",
+    Logger.info("Getting chat response from #{ollama_chat_url()}/api/chat")
+
+    Req.post!("#{ollama_chat_url()}/api/chat",
+      receive_timeout: 60_000,
       json: %{
         model: "llama3.1:70b",
         stream: true,
@@ -95,8 +104,8 @@ defmodule Oeuvre.OllamaService do
         acc = Req.Response.get_private(resp, :acc)
 
         resp =
-          case {String.contains?(decoded_data, ["[", "("]), String.contains?(decoded_data, ["]", ")"]),
-                is_nil(acc)} do
+          case {String.contains?(decoded_data, ["[", "("]),
+                String.contains?(decoded_data, ["]", ")"]), is_nil(acc)} do
             # [|...
             {true, false, true} ->
               Req.Response.put_private(resp, :acc, decoded_data)
@@ -121,6 +130,8 @@ defmodule Oeuvre.OllamaService do
   end
 
   def ollama_generate_visual_description(image64) do
+    Logger.info("Getting visual description from #{ollama_base_url()}/api/generate")
+
     Req.post!("#{ollama_base_url()}/api/generate",
       receive_timeout: 60_000,
       json: %{
