@@ -34,6 +34,7 @@ defmodule OeuvreWeb.Router do
     pipe_through [:browser]
 
     get "/", SessionController, :new
+    get "/continue", SessionController, :continue
   end
 
   scope "/", OeuvreWeb do

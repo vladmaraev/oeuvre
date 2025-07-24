@@ -44,6 +44,120 @@ defmodule OeuvreWeb.SessionController do
     )
   end
 
+  defp kvtuple_to_string({key, value}) do
+    to_string(key) <> "=" <> to_string(value)
+  end
+
+  defp map_to_url_attributes(m) do
+    Map.to_list(m)
+    |> Enum.map(&kvtuple_to_string/1)
+    |> Enum.join("&")
+  end
+
+  defp formbricks_redirect(conn, attrs) do
+    redirect(conn,
+      external:
+        "https://dev.clasp.gu.se:8020/s/cmdcvog990000mq01yiaa8kvu?#{map_to_url_attributes(attrs)}"
+    )
+  end
+
+  defp formbricks_final_redirect(conn, attrs) do
+    redirect(conn,
+      external:
+        "https://dev.clasp.gu.se:8020/s/cmdem3kka0001mq01z122viwr?#{map_to_url_attributes(attrs)}"
+    )
+  end
+
+  defp render_session(conn, session) do
+    Logger.info(inspect({session.step, session.step_complete}))
+
+    case {session.step, session.step_complete} do
+      {1, true} ->
+        Sessions.update_session(session, %{step: -1})
+
+        formbricks_redirect(
+          conn,
+          %{
+            session_id: session.id,
+            prolific_pid: session.prolific_pid,
+            prolific_session_id: session.prolific_session_id,
+            prolific_study_id: session.prolific_study_id,
+            step: session.step
+          }
+        )
+
+      {0, true} ->
+        Sessions.update_session(session, %{step: 1, step_complete: false})
+
+        formbricks_redirect(
+          conn,
+          %{
+            session_id: session.id,
+            prolific_pid: session.prolific_pid,
+            prolific_session_id: session.prolific_session_id,
+            prolific_study_id: session.prolific_study_id,
+            step: session.step
+          }
+        )
+
+      {-1, _} ->
+        formbricks_final_redirect(
+          conn,
+          %{
+            session_id: session.id,
+            prolific_pid: session.prolific_pid,
+            prolific_session_id: session.prolific_session_id,
+            prolific_study_id: session.prolific_study_id
+          }
+        )
+
+      _ ->
+        group = Groups.get_group!(session.group_id)
+        image = get_image(group, session.step)
+        condition = get_condition(group, session.step)
+
+        # description = OllamaService.ollama_generate_visual_description(image)
+        # description = "dummy description"
+
+        unique_id = UUID.uuid4()
+
+        Task.start(fn ->
+          input_sg = PhoenixSignaling.new("#{unique_id}_egress_screen")
+
+          Boombox.run(
+            input: {:webrtc, input_sg},
+            output:
+              {:mp4, "#{recordings_path()}/x_screen_#{session.prolific_pid}_#{unique_id}.mp4"}
+          )
+        end)
+
+        Task.start(fn ->
+          input_sg = PhoenixSignaling.new("#{unique_id}_egress_mic")
+
+          Boombox.run(
+            input: {:webrtc, input_sg},
+            output: {:mp4, "#{recordings_path()}/x_mic_#{session.prolific_pid}_#{unique_id}.mp4"}
+          )
+        end)
+
+        render(conn, :start,
+          # description: description,
+          signalling_id: unique_id,
+          image: image,
+          session_id: session.id,
+          step: session.step,
+          prolific_pid: session.prolific_pid,
+          condition: condition
+        )
+    end
+  end
+
+  def continue(conn, %{"session_id" => id}) do
+    case Sessions.get_session!(id) do
+      session -> render_session(conn, session)
+    end
+  end
+
   def new(conn, %{
         "prolific_pid" => prolific_pid,
         "session_id" => prolific_session_id,
@@ -74,72 +188,7 @@ defmodule OeuvreWeb.SessionController do
         })
 
       session ->
-        Logger.info(inspect({session.step, session.step_complete}))
-
-        case {session.step, session.step_complete} do
-          {1, true} ->
-            Sessions.update_session(session, %{step: -1})
-
-            qualtrics_redirect(
-              conn,
-              prolific_pid,
-              prolific_session_id,
-              prolific_study_id,
-              session.step
-            )
-
-          {0, true} ->
-            Sessions.update_session(session, %{step: 1, step_complete: false})
-
-            qualtrics_redirect(
-              conn,
-              prolific_pid,
-              prolific_session_id,
-              prolific_study_id,
-              session.step
-            )
-
-          {-1, _} ->
-            qualtrics_final_redirect(conn, prolific_pid, prolific_session_id, prolific_study_id)
-
-          _ ->
-            group = Groups.get_group!(session.group_id)
-            image = get_image(group, session.step)
-            condition = get_condition(group, session.step)
-
-            # description = OllamaService.ollama_generate_visual_description(image)
-            # description = "dummy description"
-
-            unique_id = UUID.uuid4()
-
-            Task.start(fn ->
-              input_sg = PhoenixSignaling.new("#{unique_id}_egress_screen")
-
-              Boombox.run(
-                input: {:webrtc, input_sg},
-                output: {:mp4, "#{recordings_path()}/x_screen_#{prolific_pid}_#{unique_id}.mp4"}
-              )
-            end)
-
-            Task.start(fn ->
-              input_sg = PhoenixSignaling.new("#{unique_id}_egress_mic")
-
-              Boombox.run(
-                input: {:webrtc, input_sg},
-                output: {:mp4, "#{recordings_path()}/x_mic_#{prolific_pid}_#{unique_id}.mp4"}
-              )
-            end)
-
-            render(conn, :start,
-              # description: description,
-              signalling_id: unique_id,
-              image: image,
-              session_id: session.id,
-              step: session.step,
-              prolific_pid: prolific_pid,
-              condition: condition
-            )
-        end
+        render_session(conn, session)
     end
   end
 
