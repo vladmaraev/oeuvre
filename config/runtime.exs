@@ -21,9 +21,11 @@ if System.get_env("PHX_SERVER") do
 end
 
 config :oeuvre, Oeuvre.OllamaService,
-  host: System.get_env("OLLAMA_HOST") || "localhost",
-  chat_host: System.get_env("OLLAMA_CHAT_HOST") || System.get_env("OLLAMA_HOST") || "localhost",
-  port: System.get_env("OLLAMA_PORT") || "11434"
+  completion_url: System.get_env("COMPLETION_URL") || "http://localhost:11434/api/generate",
+  chat_completion_url:
+    System.get_env("CHAT_COMPLETION_URL") || System.get_env("COMPLETION_URL") ||
+      "http://localhost:11434/api/chat",
+  mistral_api_key: System.get_env("MISTRAL_API_KEY")
 
 config :oeuvre, Oeuvre.AzureService,
   key:

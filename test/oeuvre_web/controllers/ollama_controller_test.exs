@@ -27,7 +27,6 @@ defmodule OeuvreWeb.OllamaControllerTest do
         "signalling_id" => "test",
         "condition" => "1"
       })
-
     assistant_response = json_response(conn, 200)
     Logger.info(inspect(assistant_response))
     assert "assistant" =~ assistant_response["role"]

@@ -5,17 +5,14 @@ defmodule Oeuvre.OllamaService do
 
   alias Phoenix.PubSub
 
-  defp ollama_base_url do
-    host = Application.fetch_env!(:oeuvre, Oeuvre.OllamaService)[:host]
-    port = Application.fetch_env!(:oeuvre, Oeuvre.OllamaService)[:port]
-    "http://#{host}:#{port}"
-  end
+  defp completion_visual_url,
+    do: Application.fetch_env!(:oeuvre, Oeuvre.OllamaService)[:completion_url]
 
-  defp ollama_chat_url do
-    host = Application.fetch_env!(:oeuvre, Oeuvre.OllamaService)[:chat_host]
-    port = Application.fetch_env!(:oeuvre, Oeuvre.OllamaService)[:port]
-    "http://#{host}:#{port}"
-  end
+  defp completion_chat_url,
+    do: Application.fetch_env!(:oeuvre, Oeuvre.OllamaService)[:chat_completion_url]
+
+  defp mistral_api_key,
+    do: Application.fetch_env!(:oeuvre, Oeuvre.OllamaService)[:mistral_api_key]
 
   def get_image_base64(imgname) do
     {:ok, %{:status => status, :body => body}} =
@@ -82,6 +79,35 @@ defmodule Oeuvre.OllamaService do
     Logger.info("[broadcast to #{signalling_id}]>>> {#{processed}}")
   end
 
+  def chat_callback(data, req, resp, signalling_id, condition) do
+    Logger.info(inspect(data))
+    decoded_data = Jason.decode!(data)["message"]["content"]
+    acc = Req.Response.get_private(resp, :acc)
+
+    resp =
+      case {String.contains?(decoded_data, ["[", "("]),
+            String.contains?(decoded_data, ["]", ")"]), is_nil(acc)} do
+        # [|...
+        {true, false, true} ->
+          Req.Response.put_private(resp, :acc, decoded_data)
+
+        # ...|]
+        {false, true, false} ->
+          broadcast(signalling_id, acc <> decoded_data, condition)
+          Req.Response.put_private(resp, :acc, nil)
+
+        # [| x |]
+        {false, false, false} ->
+          Req.Response.put_private(resp, :acc, acc <> decoded_data)
+
+        {_, _, _} ->
+          broadcast(signalling_id, decoded_data, condition)
+          resp
+      end
+
+    {:cont, {req, resp}}
+  end
+
   def chat(signalling_id, image_description, history \\ [], condition) do
     messages = [
       %{role: "system", content: chat_system_prompt(image_description)}
@@ -90,49 +116,53 @@ defmodule Oeuvre.OllamaService do
 
     Logger.debug("<<< #{inspect(messages)}")
 
-    Logger.info("Getting chat response from #{ollama_chat_url()}/api/chat")
+    Logger.info("Getting chat response from #{completion_chat_url()}")
 
-    Req.post!("#{ollama_chat_url()}/api/chat",
-      receive_timeout: 60_000,
-      json: %{
-        model: "llama3.1:70b",
-        stream: true,
-        messages: messages
-      },
-      into: fn {:data, data}, {req, resp} ->
-        decoded_data = Jason.decode!(data)["message"]["content"]
-        acc = Req.Response.get_private(resp, :acc)
+    case completion_chat_url() do
+      <<"https://api.mistral", _::binary>> ->
+        req =
+          Req.new(
+            method: "post",
+            receive_timeout: 60_000,
+            url: completion_chat_url(),
+            headers: %{
+              "Content-Type" => ["application/json"],
+              "Accept" => ["application/json"],
+              "Authorization" => "Bearer " <> mistral_api_key()
+            },
+            json: %{
+              model: "mistral-large-latest",
+              stream: true,
+              messages: messages
+            },
+            into: fn {:data, data}, {req, resp} ->
+              chat_callback(data, req, resp, signalling_id, condition)
+            end
+          )
 
-        resp =
-          case {String.contains?(decoded_data, ["[", "("]),
-                String.contains?(decoded_data, ["]", ")"]), is_nil(acc)} do
-            # [|...
-            {true, false, true} ->
-              Req.Response.put_private(resp, :acc, decoded_data)
+        Logger.info(inspect(req))
 
-            # ...|]
-            {false, true, false} ->
-              broadcast(signalling_id, acc <> decoded_data, condition)
-              Req.Response.put_private(resp, :acc, nil)
+        Req.post!(req)
 
-            # [| x |]
-            {false, false, false} ->
-              Req.Response.put_private(resp, :acc, acc <> decoded_data)
-
-            {_, _, _} ->
-              broadcast(signalling_id, decoded_data, condition)
-              resp
+      url ->
+        Req.post!(url,
+          receive_timeout: 60_000,
+          json: %{
+            model: "gpt-oss",
+            stream: true,
+            messages: messages
+          },
+          into: fn {:data, data}, {req, resp} ->
+            chat_callback(data, req, resp, signalling_id, condition)
           end
-
-        {:cont, {req, resp}}
-      end
-    )
+        )
+    end
   end
 
   def ollama_generate_visual_description(image64) do
-    Logger.info("Getting visual description from #{ollama_base_url()}/api/generate")
+    Logger.info("Getting visual description from #{completion_visual_url()}")
 
-    Req.post!("#{ollama_base_url()}/api/generate",
+    Req.post!("#{completion_visual_url()}",
       receive_timeout: 60_000,
       json: %{
         model: "llava:34b",

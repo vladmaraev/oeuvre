@@ -27,7 +27,7 @@ defmodule OeuvreWeb.SessionController do
 
   def authorised?(pid, study_id) do
     # pid in (Sessions.list_allowed_pids() |> Enum.map(fn x -> x.prolific_pid end))
-    study_id == "10000"
+    study_id == "0umqymnnc1l"
   end
 
   defp qualtrics_final_redirect(conn, prolific_pid, prolific_session_id, prolific_study_id) do
@@ -154,7 +154,24 @@ defmodule OeuvreWeb.SessionController do
 
   def continue(conn, %{"session_id" => id}) do
     case Sessions.get_session!(id) do
-      session -> render_session(conn, session)
+      %{
+        id: id,
+        prolific_pid: prolific_pid,
+        prolific_session_id: prolific_session_id,
+        prolific_study_id: "0umqymnnc1l"
+      } ->
+        formbricks_final_redirect(
+          conn,
+          %{
+            session_id: id,
+            prolific_pid: prolific_pid,
+            prolific_session_id: prolific_session_id,
+            prolific_study_id: "0umqymnnc1l"
+          }
+        )
+
+      session ->
+        render_session(conn, session)
     end
   end
 
