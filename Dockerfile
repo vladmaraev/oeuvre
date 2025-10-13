@@ -25,7 +25,7 @@ RUN cd assets && npm install
 FROM ${BUILDER_IMAGE} as builder
 
 # install build dependencies
-RUN apt-get update -y && apt-get install -y build-essential git pkg-config libssl-dev libvpx-dev libsrtp2-dev \
+RUN apt-get update -y && apt-get install -y build-essential git pkg-config libssl-dev libvpx-dev libsrtp2-dev libsrt-gnutls-dev libgnutls28-dev \
     && apt-get clean && rm -f /var/lib/apt/lists/*_*
 
 # prepare build dir
@@ -73,7 +73,7 @@ RUN mix release
 FROM ${RUNNER_IMAGE}
 
 RUN apt-get update -y && \
-  apt-get install -y libstdc++6 openssl libncurses5 locales ca-certificates vpx-tools libsrtp2-1 \
+  apt-get install -y libstdc++6 openssl libncurses5 locales ca-certificates vpx-tools libsrtp2-1 libsrt1.4-gnutls libgnutls28-dev \
   && apt-get clean && rm -f /var/lib/apt/lists/*_*
 
 # Set the locale
