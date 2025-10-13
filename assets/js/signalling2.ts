@@ -46,7 +46,12 @@ const connect: Connect = (suffix, mode) => {
     });
     socket.connect();
     let egressChannel = socket.channel(`${signallingId}_${suffix}`);
-    console.debug("Joining egress signaling socket...", socket, egressChannel, `${signallingId}_${suffix}`);
+    console.debug(
+      "Joining egress signaling socket...",
+      socket,
+      egressChannel,
+      `${signallingId}_${suffix}`,
+    );
     egressChannel
       .join()
       .receive("ok", async (resp) => {
@@ -73,65 +78,96 @@ type StartEgressConnection = (
   mode: string,
 ) => Promise<RTCPeerConnection>;
 const startEgressConnection: StartEgressConnection = async (
-  channel: Channel,
-  topic: string,
-  socket: Socket,
-  mode: string,
+  channel,
+  topic,
+  socket,
+  mode,
 ) => {
-  return new Promise((resolve, _reject) => {
-    console.debug("Starting egress connection...", channel, topic, socket);
-    channel.on(topic, async (payload) => {
-      const { type, data } = payload;
-      switch (type) {
-        case "sdp_answer":
-          console.log("Received SDP answer:", data);
-          await pc.setRemoteDescription(data);
-          break;
-        case "ice_candidate":
-          console.log("Received ICE candidate:", data);
-          await pc.addIceCandidate(data);
-          break;
+  return new Promise(async (resolve) => {
+    const pc = new RTCPeerConnection(pcConfig);
+
+    // Phoenix inbound
+    channel.on(topic, async ({ type, data }) => {
+      if (type === "sdp_answer") {
+        await pc.setRemoteDescription(data);
+      } else if (type === "ice_candidate") {
+        await pc.addIceCandidate(data);
       }
     });
 
-    const pc = new RTCPeerConnection(pcConfig);
-    pc.addTransceiver("audio");
-    if (mode == "a+v") pc.addTransceiver("video");
+    // Prefer H.264 for video (packetization-mode=1)
+    const aTrans = pc.addTransceiver("audio", { direction: "sendonly" });
+    const vTrans =
+      mode === "a+v"
+        ? pc.addTransceiver("video", { direction: "sendonly" })
+        : undefined;
+    if (vTrans) {
+      const all = RTCRtpSender.getCapabilities("video")?.codecs || [];
+      const h264 = all.filter(
+        (c) =>
+          c.mimeType.toLowerCase() === "video/h264" &&
+          (c.sdpFmtpLine || "").toLowerCase().includes("packetization-mode=1"),
+      );
+      if (h264.length) vTrans.setCodecPreferences(h264);
+    }
 
-    pc.onicecandidate = (event) => {
-      if (event.candidate === null) return;
-      console.debug("Sent ICE candidate:", event.candidate);
+    pc.onicecandidate = (e) => {
+      if (!e.candidate) return;
       channel.push(
         topic,
-        JSON.stringify({
-          type: "ice_candidate",
-          data: event.candidate,
-        }) as any,
+        JSON.stringify({ type: "ice_candidate", data: e.candidate }) as any,
       );
     };
 
-    pc.onnegotiationneeded = (_event) => {
-      console.debug("Negotiation needed!", pc.getSenders());
-      pc.createOffer().then((offer) => {
-        pc.setLocalDescription(offer);
-        console.debug("Ready to negotiate the offer", offer);
-        channel.push(
-          topic,
-          JSON.stringify({ type: "sdp_offer", data: offer }) as any,
-        );
-      });
-    };
-
-    pc.onconnectionstatechange = (_event) => {
-      if (pc.connectionState == "connected") {
-        // return resolve(pc);
+    pc.onconnectionstatechange = () => {
+      if (pc.connectionState === "connected") {
+        const vSender = pc
+          .getSenders()
+          .find((s) => s.track && s.track.kind === "video");
+        (vSender as any)?.requestKeyFrame?.(); // force an IDR ASAP
         console.debug("connected!");
       }
     };
 
-    mode == "a+v"
-      ? replaceWithDisplayMedia(pc).then(() => resolve(pc))
-      : replaceWithUserMedia(pc).then(() => resolve(pc));
+    // Attach media, then make the *first* offer once
+    async function primeTracksAndOffer() {
+      if (mode === "a+v") {
+        const ms =
+          await navigator.mediaDevices.getDisplayMedia(displayMediaOptions);
+        ms.getVideoTracks().forEach((t) => (t.contentHint = "detail"));
+
+        const senders = pc.getSenders();
+        const aSender =
+          senders.find((s) => s.track?.kind === "audio") || senders[0];
+        const vSender =
+          senders.find((s) => s.track?.kind === "video") ||
+          senders.find((s) => s !== aSender);
+
+        for (const t of ms.getTracks()) {
+          const s = t.kind === "audio" ? aSender : vSender;
+          if (s) await s.replaceTrack(t);
+        }
+      } else {
+        const ms = await navigator.mediaDevices.getUserMedia({
+          video: false,
+          audio: true,
+        });
+        const aSender =
+          pc.getSenders().find((s) => s.track?.kind === "audio") ||
+          pc.getSenders()[0];
+        await aSender.replaceTrack(ms.getAudioTracks()[0]);
+      }
+
+      const offer = await pc.createOffer();
+      await pc.setLocalDescription(offer);
+      channel.push(
+        topic,
+        JSON.stringify({ type: "sdp_offer", data: offer }) as any,
+      );
+      resolve(pc);
+    }
+
+    await primeTracksAndOffer();
   });
 };
 

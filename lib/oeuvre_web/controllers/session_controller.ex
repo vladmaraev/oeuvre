@@ -121,6 +121,17 @@ defmodule OeuvreWeb.SessionController do
 
         unique_id = UUID.uuid4()
 
+        # {:ok, _sup, _pid} =
+        #   Membrane.Pipeline.start_link(Oeuvre.RecordingPipeline, %{
+        #     screen_signaling_id: "#{unique_id}_egress_screen",
+        #     mic_signaling_id: "#{unique_id}_egress_mic",
+        #     out_path:
+        #       Path.join(
+        #         recordings_path(),
+        #         "x_merged_#{session.prolific_pid}_#{unique_id}.mp4"
+        #       )
+        #   })
+
         Task.start(fn ->
           input_sg = PhoenixSignaling.new("#{unique_id}_egress_screen")
 

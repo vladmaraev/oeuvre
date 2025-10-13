@@ -61,6 +61,7 @@ defmodule Oeuvre.MixProject do
       {:bandit, "~> 1.5"},
       {:req, "~> 0.5.7"},
       {:boombox, "~> 0.2.1"},
+      # {:membrane_audio_mix_plugin, "~> 0.16.3"},
       # {:membrane_webrtc_plugin, "~> 0.25.3", override: true},
       {:benchee, "~> 1.0", only: :dev}
       # { :uuid, "~> 1.1" }

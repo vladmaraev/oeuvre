@@ -82,6 +82,7 @@ defmodule Oeuvre.OllamaService do
   def chat_callback(data, req, resp, signalling_id, condition) do
     Logger.info(inspect(data))
     decoded_data = Jason.decode!(data)["message"]["content"]
+    done = Jason.decode!(data)["done"]
     acc = Req.Response.get_private(resp, :acc)
 
     resp =
@@ -104,6 +105,10 @@ defmodule Oeuvre.OllamaService do
           broadcast(signalling_id, decoded_data, condition)
           resp
       end
+
+    if done == true do
+      broadcast(signalling_id, "~~~DONE~~~", condition)
+    end
 
     {:cont, {req, resp}}
   end

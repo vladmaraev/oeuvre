@@ -7,11 +7,11 @@ defmodule OeuvreWeb.SessionHTML do
 
   def avatar(assigns) do
     ~H"""
-    <div class="flex justify-center mb-10">
+    <div class="flex p-4">
       <button
         id="speechstate"
         phx-hook="SpeechState"
-        class="bg-neutral-100 text-slate-900 text-2xl text-center py-2 px-5 rounded-r-2xl flex flex-row h-40 w-64 items-center justify-start gap-4 border border-[2px] border-slate-900"
+        class="bg-neutral-100 text-slate-900 text-2xl text-center px-5 rounded-r-2xl flex flex-row h-32 w-64 items-center justify-start gap-4 border border-[1px] border-slate-900"
       >
         <img class="h-20 shrink-0" src={"images/dude#{@condition}.svg"} />
       </button>
@@ -23,8 +23,8 @@ defmodule OeuvreWeb.SessionHTML do
 
   def image(assigns) do
     ~H"""
-    <div class="w-full" id="image" hidden>
-      <img class="mx-auto" src={"data:image/jpeg;base64, #{@image64}"} />
+    <div class="flex-1 min-h-0" id="image">
+      <img class="max-w-full max-h-full object-contain mx-auto mb-10" src={"data:image/jpeg;base64, #{@image64}"} />
     </div>
     """
   end
