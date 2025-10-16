@@ -24,14 +24,17 @@ defmodule OeuvreWeb.SessionHTML do
   def image(assigns) do
     ~H"""
     <div class="flex-1 min-h-0" id="image">
-      <img class="max-w-full max-h-full object-contain mx-auto mb-10" src={"data:image/jpeg;base64, #{@image64}"} />
+      <img
+        class="max-w-full max-h-full object-contain mx-auto mb-10"
+        src={"data:image/jpeg;base64, #{@image64}"}
+      />
     </div>
     """
   end
 
   def instruction(assigns) do
     ~H"""
-    <section class="m-5 p-5 rounded-md bg-lime-100 h-full" id="modal">
+    <section class="m-5 p-5 rounded-md bg-lime-100 h-full" id="modal" hidden>
       <h1 class="text-2xl font-semibold mb-5" id="instructions">
         🖼️ Welcome to the exploration of Art & AI! 🤖
       </h1>
@@ -63,6 +66,59 @@ defmodule OeuvreWeb.SessionHTML do
         >
           I understood the instructions. Let’s start!
         </button>
+      </article>
+    </section>
+    """
+  end
+
+  def consent_form(assigns) do
+    ~H"""
+    <section class="m-5 p-5 rounded-md bg-slate-100 h-full" id="consent_form">
+      <h1 class="text-2xl font-semibold mb-5" id="instructions">
+        Consent form
+      </h1>
+      <article id="meat" class="text-xl">
+        <p class="mb-3">
+          In this task, you will be asked to have a spoken discussion with an AI about the given work of art. After the discussion you will be asked to fill in two short surveys.
+        </p>
+        <p class="mb-3">
+          By clicking the "<strong>Yes, I consent.</strong>" button below, you acknowledge:
+        </p>
+        <ol class="list-disc pl-4 mb-5 *:py-1 *:me-2 ml-5">
+          <li>You are at least 18 years of age.</li>
+          <li>You are a fluent English speaker.</li>
+          <li>Your participation in the study is voluntary.</li>
+          <li>You are aware that we will be recording your voice.</li>
+          <li>
+            You are aware that your voice will be automatically transcribed using Microsoft Azure AI services.
+            <a href="https://learn.microsoft.com/en-us/legal/cognitive-services/speech-service/speech-to-text/data-privacy-security?context=%2Fazure%2Fai-services%2Fspeech-service%2Fcontext%2Fcontext#no-data-trace">
+              Microsoft does not retain or store the data provided by customers.
+            </a>
+          </li>
+          <li>
+            You are aware that transcripts and recordings from the conversations will be made available to the research community and stored for future research purposes.
+          </li>
+          <li>
+            You are aware that you may choose to terminate your participation at any time for any reason.
+          </li>
+          <li>You are aware that you may contact us to withdraw your consent and your data.</li>
+          <li>
+            You are aware that the results of the study may be published in a journal/conference, with anonymized data, and no information can reveal your identity.
+          </li>
+          <li>
+            You are required to use <strong>Google Chrome or other Chromium-based browser</strong>
+            for the study.
+          </li>
+        </ol>
+        <button
+          id="consentclose"
+          class="bg-slate-300 text-slate-900 py-2 px-5 rounded font-semibold hover:bg-amber-200 hover:border-lime-200"
+        >
+          Yes, I consent.
+        </button>
+        <p class="mt-3 pl-4 text-sm font-semibold text-red-600">
+          If you do not wish to participate in this study, please close this page and return your submission on Prolific by selecting the “Stop without completing” button.
+        </p>
       </article>
     </section>
     """
@@ -106,11 +162,16 @@ defmodule OeuvreWeb.SessionHTML do
 
       }
 
+      document.getElementById("consentclose").addEventListener("click", () =>  {
+          document.getElementById('modal').hidden = false;
+          document.getElementById('consent_form').hidden = true; 
+        })
       document.getElementById('modalclose').addEventListener("click", () =>  {
-      document.getElementById('modal').hidden = true;
-      document.getElementById('container').hidden = false; 
-      window.startSpeechState(param);
+          document.getElementById('modal').hidden = true;
+          document.getElementById('container').hidden = false; 
+          window.startSpeechState(param);
       })
+
         }
     </script>
     """
