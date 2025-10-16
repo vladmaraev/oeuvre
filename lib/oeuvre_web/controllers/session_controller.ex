@@ -69,8 +69,6 @@ defmodule OeuvreWeb.SessionController do
   end
 
   defp render_session(conn, session) do
-    Logger.info(inspect({session.step, session.step_complete}))
-
     case {session.step, session.step_complete} do
       {1, true} ->
         Sessions.update_session(session, %{step: -1})
@@ -87,7 +85,13 @@ defmodule OeuvreWeb.SessionController do
         )
 
       {0, true} ->
-        Sessions.update_session(session, %{step: 1, step_complete: false})
+        case session.prolific_study_id do
+          "0umqymnnc1l" ->
+            Sessions.update_session(session, %{step: -1})
+
+          _ ->
+            Sessions.update_session(session, %{step: 1, step_complete: false})
+        end
 
         formbricks_redirect(
           conn,
@@ -165,22 +169,6 @@ defmodule OeuvreWeb.SessionController do
 
   def continue(conn, %{"session_id" => id}) do
     case Sessions.get_session!(id) do
-      %{
-        id: id,
-        prolific_pid: prolific_pid,
-        prolific_session_id: prolific_session_id,
-        prolific_study_id: "0umqymnnc1l"
-      } ->
-        formbricks_final_redirect(
-          conn,
-          %{
-            session_id: id,
-            prolific_pid: prolific_pid,
-            prolific_session_id: prolific_session_id,
-            prolific_study_id: "0umqymnnc1l"
-          }
-        )
-
       session ->
         render_session(conn, session)
     end
@@ -216,6 +204,8 @@ defmodule OeuvreWeb.SessionController do
         })
 
       session ->
+        req = Req.new(base_url: OeuvreWeb.Endpoint.url())
+        Req.get!(req, url: "/warmup")
         render_session(conn, session)
     end
   end

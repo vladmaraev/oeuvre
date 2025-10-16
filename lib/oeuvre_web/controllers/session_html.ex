@@ -11,7 +11,7 @@ defmodule OeuvreWeb.SessionHTML do
       <button
         id="speechstate"
         phx-hook="SpeechState"
-        class="bg-neutral-100 text-slate-900 text-2xl text-center px-5 rounded-r-2xl flex flex-row h-32 w-64 items-center justify-start gap-4 border border-[1px] border-slate-900"
+        class="bg-neutral-100 text-slate-900 text-2xl text-center px-5 rounded-r-2xl flex flex-row h-32 w-64 items-center justify-start gap-4 border border-[2px] border-slate-900"
       >
         <img class="h-20 shrink-0" src={"images/dude#{@condition}.svg"} />
       </button>

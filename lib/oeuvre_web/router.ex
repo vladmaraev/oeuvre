@@ -52,6 +52,7 @@ defmodule OeuvreWeb.Router do
   scope "/ollama", OeuvreWeb do
     pipe_through :api
 
+    get "/warmup", OllamaController, :warmup
     post "/describe", OllamaController, :describe_image
     post "/chat", OllamaController, :chat
   end

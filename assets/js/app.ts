@@ -16,12 +16,12 @@
 //
 
 // Include phoenix_html to handle method=PUT/DELETE in forms and buttons.
-import "phoenix_html";
+// import "phoenix_html";
 
 // Establish Phoenix Socket and LiveView configuration.
 import { Socket } from "phoenix";
 import { LiveSocket } from "phoenix_live_view";
-import topbar from "topbar"
+import topbar from "topbar";
 import { dmActor, startSpeechState } from "./dialogue";
 import { metaToTailwind } from "./metaToTailwind";
 
@@ -35,10 +35,10 @@ Hooks.SpeechState = {
       },
       false,
     );
-    
+
     let dmActorMeta: string | undefined = "prepare";
     dmActor.subscribe((state) => {
-      console.debug(state.value)
+      console.debug(state.value);
       if (state.matches("Main")) {
         let metaSS: { view?: string } = Object.values(
           state.context.ssRef.getSnapshot().getMeta(),
@@ -64,10 +64,18 @@ let liveSocket = new LiveSocket("/live", Socket, {
 
 // Show progress bar on live navigation and form submits
 topbar.config({ barColors: { 0: "#29d" }, shadowColor: "rgba(0, 0, 0, .3)" });
+window.addEventListener("beforeunload", () => {
+  window.dispatchEvent(new CustomEvent("phx:page-loading-start"));
+});
+window.addEventListener("load", () => {
+  window.dispatchEvent(new CustomEvent("phx:page-loading-stop"));
+});
+
 window.addEventListener("phx:page-loading-start", (_info) => topbar.show(300));
 window.addEventListener("phx:page-loading-stop", (_info) => topbar.hide());
 
 // connect if there are any LiveViews on the page
+topbar.show(300);
 liveSocket.connect();
 
 // expose liveSocket on window for web console debug logs and latency simulation:

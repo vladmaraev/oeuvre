@@ -4,6 +4,24 @@ defmodule OeuvreWeb.OllamaController do
   alias Phoenix.PubSub
   require Logger
 
+  def warmup(conn) do
+    descr =
+      OllamaService.ollama_generate_visual_description(
+        "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII="
+      )
+
+    Logger.info(descr)
+
+    OllamaService.chat(
+      "test",
+      descr,
+      [%{role: "assistant", content: "Hello"}, %{role: "user", content: "What do you think?"}],
+      "1"
+    )
+
+    json(conn, %{role: "assistant", content: ""})
+  end
+
   def describe_image(conn, %{"image" => image}) do
     # The home page is often custom made,
     # so skip the default app layout.
@@ -31,8 +49,8 @@ defmodule OeuvreWeb.OllamaController do
   defp loop(string) do
     receive do
       "~~~DONE~~~" ->
-        string        
-        
+        string
+
       msg ->
         case String.contains?(msg, "<s />") do
           true -> loop(string <> " [apology] ")
