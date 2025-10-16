@@ -30,7 +30,6 @@ export const metaToTailwind = (meta: string | undefined) => {
       return (
         base +
         `after:content-['Click_to_continue!']
-        hover:after:content-['Continue?_👆']
         hover:bg-green-50
         `
       );
@@ -38,7 +37,6 @@ export const metaToTailwind = (meta: string | undefined) => {
       return (
         base +
         `after:content-['Click_to_continue!']
-        hover:after:content-['Continue?_👆']
         hover:bg-green-50
         `
       );

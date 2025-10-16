@@ -1,6 +1,7 @@
 import Config
 # Configure your database
 config :oeuvre, Oeuvre.Repo,
+  prepare: :unnamed,
   url:
     System.get_env("DATABASE_URL") ||
       raise("""
