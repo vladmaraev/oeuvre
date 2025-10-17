@@ -7,14 +7,15 @@ defmodule OeuvreWeb.SessionHTML do
 
   def avatar(assigns) do
     ~H"""
-    <div class="flex p-4">
+    <div class="flex p-4 items-center">
       <button
         id="speechstate"
         phx-hook="SpeechState"
-        class="bg-neutral-100 text-slate-900 text-2xl text-center px-5 rounded-r-2xl flex flex-row h-32 w-64 items-center justify-start gap-4 border border-[2px] border-slate-900"
+        class="bg-neutral-100 text-slate-900 text-2xl text-center px-5 rounded-r-2xl flex flex-row h-32 w-64 items-center justify-start gap-4 border border-[2px] border-slate-900 mr-5"
       >
         <img class="h-20 shrink-0" src={"images/dude#{@condition}.svg"} />
       </button>
+      <.ideas />
     </div>
     """
   end
@@ -53,13 +54,7 @@ defmodule OeuvreWeb.SessionHTML do
           <li><span class="me-2">🤫</span> Make sure you are sitting in a quiet environment.</li>
           <li><span class="me-2">🎧</span> Ideally, use a headset.</li>
         </ol>
-
-        <p class="pl-4 text-sm font-semibold">Ideas to discuss</p>
-        <ol class="list-numbered pl-4 *:py-0 text-sm">
-          <li>Is it very innovative? Beautiful? Thought-provoking?</li>
-          <li>Does it evoke emotions? Memories?</li>
-          <li>What does it depict? Do you understand it? Is it unique?</li>
-        </ol>
+        <.ideas />
         <button
           id="modalclose"
           class="mt-7 bg-slate-300 text-slate-900 py-2 px-5 rounded font-semibold hover:bg-amber-200 hover:border-lime-200"
@@ -67,6 +62,19 @@ defmodule OeuvreWeb.SessionHTML do
           I understood the instructions. Let’s start!
         </button>
       </article>
+    </section>
+    """
+  end
+
+  def ideas(assigns) do
+    ~H"""
+    <section>
+      <p class="pl-4 text-sm font-semibold">Ideas to discuss:</p>
+      <ol class="list-numbered pl-4 *:py-0 text-sm">
+        <li>Is it very innovative? Beautiful? Thought-provoking?</li>
+        <li>Does it evoke emotions? Memories?</li>
+        <li>What does it depict? Do you understand it? Is it unique?</li>
+      </ol>
     </section>
     """
   end
@@ -91,7 +99,10 @@ defmodule OeuvreWeb.SessionHTML do
           <li>You are aware that we will be recording your voice.</li>
           <li>
             You are aware that your voice will be automatically transcribed using Microsoft Azure AI services.
-            <a href="https://learn.microsoft.com/en-us/legal/cognitive-services/speech-service/speech-to-text/data-privacy-security?context=%2Fazure%2Fai-services%2Fspeech-service%2Fcontext%2Fcontext#no-data-trace">
+            <a
+              class="text-blue-700"
+              href="https://learn.microsoft.com/en-us/legal/cognitive-services/speech-service/speech-to-text/data-privacy-security?context=%2Fazure%2Fai-services%2Fspeech-service%2Fcontext%2Fcontext#no-data-trace"
+            >
               Microsoft does not retain or store the data provided by customers.
             </a>
           </li>
@@ -112,7 +123,7 @@ defmodule OeuvreWeb.SessionHTML do
         </ol>
         <button
           id="consentclose"
-          class="bg-slate-300 text-slate-900 py-2 px-5 rounded font-semibold hover:bg-amber-200 hover:border-lime-200"
+          class="mt-7 ml-4 bg-slate-300 text-slate-900 py-2 px-5 rounded font-semibold hover:bg-amber-200 hover:border-lime-200"
         >
           Yes, I consent.
         </button>

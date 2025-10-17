@@ -6,7 +6,6 @@ export const metaToTailwind = (meta: string | undefined) => {
       return (
         base +
         `after:content-['Click_to_start!']
-        hover:after:content-['Start?_👆']
         hover:bg-green-50 
         `
       );
@@ -14,7 +13,6 @@ export const metaToTailwind = (meta: string | undefined) => {
       return (
         base +
         `after:content-['Speaking...']
-        hover:after:content-['Pause?_👆']
         hover:bg-green-50
         animate-speaking`
       );
@@ -22,7 +20,6 @@ export const metaToTailwind = (meta: string | undefined) => {
       return (
         base +
         `after:content-['Listening...']
-        hover:after:content-['Pause?_👆']
         hover:bg-green-50
         animate-recognising`
       );
