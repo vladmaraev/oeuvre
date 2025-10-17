@@ -80,7 +80,6 @@ defmodule Oeuvre.OllamaService do
   end
 
   def chat_callback(data, req, resp, signalling_id, condition) do
-    Logger.info(inspect(data))
     decoded_data = Jason.decode!(data)["message"]["content"]
     done = Jason.decode!(data)["done"]
     acc = Req.Response.get_private(resp, :acc)
@@ -124,6 +123,7 @@ defmodule Oeuvre.OllamaService do
     Logger.info("Getting chat response from #{completion_chat_url()}")
 
     case completion_chat_url() do
+      ## Not implemented
       <<"https://api.mistral", _::binary>> ->
         req =
           Req.new(
@@ -144,8 +144,6 @@ defmodule Oeuvre.OllamaService do
               chat_callback(data, req, resp, signalling_id, condition)
             end
           )
-
-        Logger.info(inspect(req))
 
         Req.post!(req)
 

@@ -5,14 +5,10 @@ defmodule OeuvreWeb.OllamaController do
   require Logger
 
   def warmup(conn, _) do
-    Logger.info("warmup")
-
     descr =
       OllamaService.ollama_generate_visual_description(
         "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII="
       )
-
-    Logger.info(descr)
 
     OllamaService.chat(
       "test",
