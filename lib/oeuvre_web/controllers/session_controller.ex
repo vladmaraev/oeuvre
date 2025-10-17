@@ -205,7 +205,7 @@ defmodule OeuvreWeb.SessionController do
 
       session ->
         req = Req.new(base_url: OeuvreWeb.Endpoint.url())
-        Req.get!(req, url: "/warmup")
+        Req.get!(req, url: "/ollama/warmup")
         render_session(conn, session)
     end
   end
